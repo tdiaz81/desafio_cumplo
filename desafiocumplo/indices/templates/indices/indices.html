@@ -1,0 +1,181 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Indices{% endblock %}
+{% block content %}
+<main role="main">
+  <div class="container">
+    {% if 'fail' in request.GET %}
+      <p class="alert alert-danger"><b>Ingrese rango de fechas correcto.</b></p>
+    {% endif %}
+    <form action="" method="post">{% csrf_token %}
+      <div class="row justify-content-md-center">
+        <div class="col-md-3">
+            Fecha Inicial: <input id="date" type="date" required="required" name="desde" class="form-control"><br/>
+            Fecha Final: <input id="date" type="date" required="required" name="hasta" class="form-control">
+        </div>
+        <div class="col-md-6 mt-3">
+          <h3>Indices UF - Dólar </h3>
+          {% if request.POST %}
+            <p>
+                <b>Desde:</b> {{indices.fechaDesde}}<br/>
+                <b>Hasta:</b> {{indices.fechaHasta}}
+                <!-- Indices Dolar -->
+                <div class="alert alert-info">
+                  <h5>Índices Dólar: </h5>
+                  <b>Promedio:</b> {{indices.promDolar}}<br/>
+                  <b>Máximo:</b> {{indices.maxDolar}}<br/>
+                  <b>Mínimo:</b> {{indices.minDolar}}<br/>
+                </div>
+                <!-- Tabla Valores Dolar -->
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Valor Dólar</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      {% for valDolar in indices.rango_Dolar %}
+                        {% if forloop.counter0|divisibleby:2 %}
+                          <tr>
+                            <td>{{valDolar}}</td>
+                        {% endif %}
+                        {% if not forloop.counter0|divisibleby:2 %}
+                            <td>{{valDolar}}</td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                    </tr>
+                  </tbody>
+                </table>
+                <canvas id="graficoDolar" width="300" height="150"></canvas>
+                <script>
+                  var ctx = document.getElementById("graficoDolar");
+                  var rango_fechas = JSON.parse('{{ rango_fechas|safe }}');
+                  var val_Dolar = JSON.parse('{{ val_Dolar|safe }}');
+                  var graficoDolar = new Chart(ctx, {
+                      type: 'line',
+                      data: {
+                          labels: rango_fechas,
+                          datasets: [{
+                              label: 'Dólar',
+                              data: val_Dolar,
+                              backgroundColor: [
+                                  'rgba(255, 99, 132, 0.2)',
+                                  'rgba(54, 162, 235, 0.2)',
+                                  'rgba(255, 206, 86, 0.2)',
+                                  'rgba(75, 192, 192, 0.2)',
+                                  'rgba(153, 102, 255, 0.2)',
+                                  'rgba(255, 159, 64, 0.2)'
+                              ],
+                              borderColor: [
+                                  'rgba(255,99,132,1)',
+                                  'rgba(54, 162, 235, 1)',
+                                  'rgba(255, 206, 86, 1)',
+                                  'rgba(75, 192, 192, 1)',
+                                  'rgba(153, 102, 255, 1)',
+                                  'rgba(255, 159, 64, 1)'
+                              ],
+                              borderWidth: 1
+                          }]
+                      },
+                      options: {
+                          scales: {
+                              yAxes: [{
+                                  ticks: {
+                                      beginAtZero:true
+                                  }
+                              }]
+                          }
+                      }
+                  });
+                </script>
+                <br/>
+                <!-- Indices UF -->
+                <div class="alert alert-info">
+                  <h5>Índices UF: </h5>
+                  <b>Promedio:</b> {{indices.promUf}}<br/>
+                  <b>Máximo:</b> {{indices.maxUf}}<br/>
+                  <b>Mínimo:</b> {{indices.minUf}}<br/>
+                </div>
+                <!-- Tabla Valores UF -->
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Valor UF</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      {% for valUF in indices.rango_Uf %}
+                        {% if forloop.counter0|divisibleby:2 %}
+                          <tr>
+                            <td>{{valUF}}</td>
+                        {% endif %}
+                        {% if not forloop.counter0|divisibleby:2 %}
+                            <td>{{valUF}}</td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                    </tr>
+                  </tbody>
+                </table>
+                <canvas id="graficoUF" width="300" height="150"></canvas>
+                <script>
+                    var ctx = document.getElementById("graficoUF");
+                    var rango_fechas = JSON.parse('{{ rango_fechas|safe }}');
+                    var val_Dolar = JSON.parse('{{ val_Uf|safe }}');
+                    var graficoUF = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: rango_fechas,
+                            datasets: [{
+                                label: 'UF',
+                                data: val_Dolar,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255,99,132,1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero:true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                  </script>
+            </p> 
+          {% else %}
+            <p>Ingrese rango de fechas para consultar datos en SBIF.</p>
+          {% endif %}
+        </div>
+      </div>
+      <br/>
+      <div class="text-center">
+        <input type="submit" class="btn btn-primary btn-block" value="Consultar Datos" />
+      </div>
+      <br/>
+    </form>
+  </div>
+</main>
+{% endblock %}

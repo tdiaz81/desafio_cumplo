@@ -1,0 +1,103 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}TMC{% endblock %}
+{% block content %}
+<main role="main">
+  <div class="container">
+    {% if 'fail' in request.GET %}
+      <p class="alert alert-danger"><b>Ingrese valor de año correcto.</b></p>
+    {% endif %}
+    {% if 'nok' in request.GET %}
+      <p class="alert alert-danger"><b>Error al consultar API SBIF.</b></p>
+    {% endif %}
+    <form action="" method="post">{% csrf_token %}
+      <div class="row justify-content-md-center">
+        <div class="col-md-12">
+            <br/>
+            <input type="text" class="form-control" name="ano" required="required" placeholder="Ingrese Año">
+        </div>
+        <div class="col-md-12 mt-3">
+          <h3>Tasa Máxima Convencional </h3>
+          {% if request.POST %}
+            <p>
+                <b>Año:</b> {{bonus.ano}}
+                <!-- Tabla Valores TMC -->
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Título</th>
+                      <th>Subtítulo</th>
+                      <th>Valor</th>
+                      <th>Fecha</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      {% for val in TMC %}
+                          <tr>
+                            <td>{{val.Titulo}}</td>
+                            <td>{{val.SubTitulo}}</td>
+                            <td>{{val.Valor}}</td>
+                            <td>{{val.Fecha}}</td>
+                          </tr>
+                      {% endfor %}
+                    </tr>
+                  </tbody>
+                </table>
+                <canvas id="graficoTMC" width="600" height="150"></canvas>
+                <script>
+                  var ctx = document.getElementById("graficoTMC");
+                  var val_Tipo = JSON.parse('{{ val_Tipo|safe }}');
+                  var val_Tasa = JSON.parse('{{ val_Tasa|safe }}');
+                  var graficoTMC = new Chart(ctx, {
+                      type: 'line',
+                      data: {
+                          labels: val_Tipo,
+                          datasets: [{
+                              label: 'TMC',
+                              data: val_Tasa,
+                              backgroundColor: [
+                                  'rgba(255, 99, 132, 0.2)',
+                                  'rgba(54, 162, 235, 0.2)',
+                                  'rgba(255, 206, 86, 0.2)',
+                                  'rgba(75, 192, 192, 0.2)',
+                                  'rgba(153, 102, 255, 0.2)',
+                                  'rgba(255, 159, 64, 0.2)'
+                              ],
+                              borderColor: [
+                                  'rgba(255,99,132,1)',
+                                  'rgba(54, 162, 235, 1)',
+                                  'rgba(255, 206, 86, 1)',
+                                  'rgba(75, 192, 192, 1)',
+                                  'rgba(153, 102, 255, 1)',
+                                  'rgba(255, 159, 64, 1)'
+                              ],
+                              borderWidth: 1
+                          }]
+                      },
+                      options: {
+                          scales: {
+                              yAxes: [{
+                                  ticks: {
+                                      beginAtZero:true
+                                  }
+                              }]
+                          }
+                      }
+                  });
+                </script>
+            </p> 
+          {% else %}
+            <p>Ingrese año para consultar Tasa Máxima Convencional en SBIF.</p>
+          {% endif %}
+        </div>
+      </div>
+      <br/>
+      <div class="text-center">
+        <input type="submit" class="btn btn-primary btn-block" value="Consultar Datos" />
+      </div>
+      <br/>
+    </form>
+  </div>
+</main>
+{% endblock %}
